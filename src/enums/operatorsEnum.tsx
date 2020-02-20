@@ -1,6 +1,6 @@
 export enum OperatorsEnum {
-  PLUS = '+',
-  MINUS = '-',
+  ADDITION = '+',
+  SUBTRACTION = '-',
   MULTIPLICATION = '*',
   DIVISION = '/',
 }

@@ -1,4 +1,5 @@
 import uuid from 'uuid';
+
 import {
   GAME_LEVEL_SETTINGS,
   LEVEL_WITH_NEGATIVE_NUMBER,
@@ -7,49 +8,42 @@ import {
   MAX_DENOMINATOR_AND_MULTIPLIER_THIRD,
   MAX_QUANTITY_QUESTIONS,
 } from '../constants/gameConstants';
-import { QuestionsInterface } from '../interfaces/QuestionsInterface';
 import { OperatorsEnum } from '../enums/operatorsEnum';
+import { generateRandomNumber } from '../services/utils';
+import { QuestionsInterface } from '../interfaces/QuestionsInterface';
+import { OperationsInterface } from '../interfaces/OperationsInterface';
 
 export class LevelModel {
   level: number;
   operatorSign: string;
+  operators: OperatorsEnum[];
+  operations: OperationsInterface;
 
   constructor(levelNumber: number) {
     this.level = levelNumber;
     this.operatorSign = '';
-  }
-
-  static generateRandomNumber(max: number): number {
-    return Math.floor(Math.random() * (max + 1));
-  }
-
-  public getCorrectAnswer(firstNumber: number, operator: number, secondNumber: number): number {
-    switch (operator) {
-      case 0:
-        this.operatorSign = OperatorsEnum.MINUS;
-        return firstNumber - secondNumber;
-      case 1:
-        this.operatorSign = OperatorsEnum.PLUS;
-        return firstNumber + secondNumber;
-      case 2:
-        this.operatorSign = OperatorsEnum.MULTIPLICATION;
-        return firstNumber * secondNumber;
-      case 3:
-        this.operatorSign = OperatorsEnum.DIVISION;
-        return firstNumber / secondNumber;
-      default:
-        return 0;
-    }
+    this.operators = [
+      OperatorsEnum.SUBTRACTION,
+      OperatorsEnum.ADDITION,
+      OperatorsEnum.MULTIPLICATION,
+      OperatorsEnum.DIVISION,
+    ];
+    this.operations = {
+      [OperatorsEnum.SUBTRACTION]: (a, b): number => a - b,
+      [OperatorsEnum.ADDITION]: (a, b): number => a + b,
+      [OperatorsEnum.MULTIPLICATION]: (a, b): number => a * b,
+      [OperatorsEnum.DIVISION]: (a, b): number => a / b,
+    };
   }
 
   public getCurrentLevelQuestion(level: number): QuestionsInterface {
     const { maxOperatorIndex, maxNumber, maxSecondNumber } = GAME_LEVEL_SETTINGS[level - 1];
-    const operator = LevelModel.generateRandomNumber(maxOperatorIndex);
-    let firstNumber = LevelModel.generateRandomNumber(maxNumber);
+    const operatorIndex = generateRandomNumber(maxOperatorIndex);
+    let firstNumber = generateRandomNumber(maxNumber);
     let secondNumber: number;
     let denominatorAndMultiplier: number;
 
-    if (operator > 1) {
+    if (operatorIndex > 1) {
       denominatorAndMultiplier =
         // eslint-disable-next-line no-nested-ternary
         level < 8
@@ -57,25 +51,25 @@ export class LevelModel {
           : level < 10
           ? MAX_DENOMINATOR_AND_MULTIPLIER_SECOND
           : MAX_DENOMINATOR_AND_MULTIPLIER_THIRD;
-      secondNumber = LevelModel.generateRandomNumber(denominatorAndMultiplier) || 2;
+      secondNumber = generateRandomNumber(denominatorAndMultiplier) || 2;
     } else {
-      secondNumber = LevelModel.generateRandomNumber(maxSecondNumber);
+      secondNumber = generateRandomNumber(maxSecondNumber);
     }
 
-    if (operator === 3) {
+    if (operatorIndex === 3) {
       firstNumber -= firstNumber % secondNumber;
     }
 
-    if (!operator && level < LEVEL_WITH_NEGATIVE_NUMBER && firstNumber < secondNumber) {
+    if (!operatorIndex && level < LEVEL_WITH_NEGATIVE_NUMBER && firstNumber < secondNumber) {
       [firstNumber, secondNumber] = [secondNumber, firstNumber];
     }
 
-    const correctAnswer = this.getCorrectAnswer(firstNumber, operator, secondNumber);
+    const correctAnswer = this.operations[this.operators[operatorIndex]](firstNumber, secondNumber);
 
     return {
       id: uuid.v4(),
       firstNumber,
-      operator: this.operatorSign,
+      operator: this.operators[operatorIndex],
       secondNumber,
       correctAnswer,
     };
