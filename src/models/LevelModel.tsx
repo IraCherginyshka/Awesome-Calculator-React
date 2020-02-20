@@ -1,3 +1,4 @@
+import uuid from 'uuid';
 import {
   GAME_LEVEL_SETTINGS,
   LEVEL_WITH_NEGATIVE_NUMBER,
@@ -72,7 +73,7 @@ export class LevelModel {
     const correctAnswer = this.getCorrectAnswer(firstNumber, operator, secondNumber);
 
     return {
-      id: level,
+      id: uuid.v4(),
       firstNumber,
       operator: this.operatorSign,
       secondNumber,

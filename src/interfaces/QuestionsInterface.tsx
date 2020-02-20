@@ -1,5 +1,5 @@
 export interface QuestionsInterface {
-  id: number;
+  id: string;
   firstNumber: number;
   operator: string;
   secondNumber: number;

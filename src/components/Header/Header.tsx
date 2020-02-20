@@ -1,8 +1,6 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-import './Header.scss';
-
 interface HeaderPropsInterface {
   title: string;
 }

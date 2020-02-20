@@ -1,7 +1,8 @@
-import { Box } from '@material-ui/core';
+import { Box, Button, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { blue, purple } from '@material-ui/core/colors';
-import React from 'react';
+import Typography from '@material-ui/core/Typography';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { LevelModel } from '../../models/LevelModel';
@@ -28,15 +29,22 @@ const useStyles = makeStyles(() => ({
     color: purple[700],
     fontSize: 55,
   },
+  button: {
+    width: '100%',
+    height: 50,
+    margin: 20,
+  },
 }));
 
 export const LevelPage: React.FC = () => {
   const classes = useStyles();
   const params = useParams<RouteParams>();
 
+  const [isNotCompleted] = useState<boolean>(true);
+
   const levelQuestions = new LevelModel(Number(params.id)).getCurrentLevelLogic();
 
-  const questions = levelQuestions.map((question: QuestionsInterface) => {
+  const questionsView = levelQuestions.map((question: QuestionsInterface) => {
     return (
       <Box className={classes.wrap} key={question.id}>
         <Box className={classes.root} textAlign="center" lineHeight={2.5}>
@@ -58,5 +66,21 @@ export const LevelPage: React.FC = () => {
     );
   });
 
-  return <div>{questions}</div>;
+  return (
+    <Container>
+      <Typography className="title" gutterBottom variant="h2" component="h2">
+        LEVEL
+        {params.id}
+      </Typography>
+      {questionsView}
+      <Button
+        className={classes.button}
+        variant="contained"
+        color="primary"
+        disabled={isNotCompleted}
+      >
+        Check answers
+      </Button>
+    </Container>
+  );
 };
