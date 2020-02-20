@@ -1,11 +1,13 @@
 import uuid from 'uuid';
 
 import {
+  DENOMINATOR_AND_MULTIPLIER_HARD,
+  DENOMINATOR_AND_MULTIPLIER_LIGHT,
+  DENOMINATOR_AND_MULTIPLIER_MEDIUM,
   GAME_LEVEL_SETTINGS,
+  LEVEL_WITH_DENOMINATOR_AND_MULTIPLIER_HARD,
+  LEVEL_WITH_DENOMINATOR_AND_MULTIPLIER_LIGHT,
   LEVEL_WITH_NEGATIVE_NUMBER,
-  MAX_DENOMINATOR_AND_MULTIPLIER_FIRST,
-  MAX_DENOMINATOR_AND_MULTIPLIER_SECOND,
-  MAX_DENOMINATOR_AND_MULTIPLIER_THIRD,
   MAX_QUANTITY_QUESTIONS,
 } from '../constants/gameConstants';
 import { OperatorsEnum } from '../enums/operatorsEnum';
@@ -38,33 +40,32 @@ export class LevelModel {
 
   public getCurrentLevelQuestion(level: number): QuestionsInterface {
     const { maxOperatorIndex, maxNumber, maxSecondNumber } = GAME_LEVEL_SETTINGS[level - 1];
-    const operatorIndex = generateRandomNumber(maxOperatorIndex);
-    let firstNumber = generateRandomNumber(maxNumber);
+    const operatorIndex = generateRandomNumber(0, maxOperatorIndex);
+    let firstNumber = generateRandomNumber(0, maxNumber);
     let secondNumber: number;
     let denominatorAndMultiplier: number;
+    const operator: OperatorsEnum = this.operators[operatorIndex];
 
-    if (operatorIndex > 1) {
+    if (operator === OperatorsEnum.MULTIPLICATION || operator === OperatorsEnum.DIVISION) {
       denominatorAndMultiplier =
         // eslint-disable-next-line no-nested-ternary
-        level < 8
-          ? MAX_DENOMINATOR_AND_MULTIPLIER_FIRST
-          : level < 10
-          ? MAX_DENOMINATOR_AND_MULTIPLIER_SECOND
-          : MAX_DENOMINATOR_AND_MULTIPLIER_THIRD;
-      secondNumber = generateRandomNumber(denominatorAndMultiplier) || 2;
+        level < LEVEL_WITH_DENOMINATOR_AND_MULTIPLIER_LIGHT
+          ? DENOMINATOR_AND_MULTIPLIER_LIGHT
+          : level < LEVEL_WITH_DENOMINATOR_AND_MULTIPLIER_HARD
+          ? DENOMINATOR_AND_MULTIPLIER_MEDIUM
+          : DENOMINATOR_AND_MULTIPLIER_HARD;
+      secondNumber = generateRandomNumber(1, denominatorAndMultiplier);
+
+      if (operator === OperatorsEnum.DIVISION) {
+        firstNumber -= firstNumber % secondNumber;
+      }
+    } else if (operator === OperatorsEnum.SUBTRACTION && level < LEVEL_WITH_NEGATIVE_NUMBER) {
+      secondNumber = generateRandomNumber(0, firstNumber);
     } else {
-      secondNumber = generateRandomNumber(maxSecondNumber);
+      secondNumber = generateRandomNumber(0, maxSecondNumber);
     }
 
-    if (operatorIndex === 3) {
-      firstNumber -= firstNumber % secondNumber;
-    }
-
-    if (!operatorIndex && level < LEVEL_WITH_NEGATIVE_NUMBER && firstNumber < secondNumber) {
-      [firstNumber, secondNumber] = [secondNumber, firstNumber];
-    }
-
-    const correctAnswer = this.operations[this.operators[operatorIndex]](firstNumber, secondNumber);
+    const correctAnswer = this.operations[operator](firstNumber, secondNumber);
 
     return {
       id: uuid.v4(),
