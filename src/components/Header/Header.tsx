@@ -5,12 +5,10 @@ interface HeaderPropsInterface {
   title: string;
 }
 
-const Header: React.FC<HeaderPropsInterface> = ({ title }) => {
+export const Header: React.FC<HeaderPropsInterface> = ({ title }) => {
   return (
     <Typography className="title" variant="h1" gutterBottom>
       {title}
     </Typography>
   );
 };
-
-export default Header;

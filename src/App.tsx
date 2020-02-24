@@ -2,9 +2,8 @@ import { Container } from '@material-ui/core';
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
-import Main from './components/Main/Main';
+import { Header } from './components/Header/Header';
+import { Main } from './components/Main/Main';
 import { LevelPage } from './components/LevelPage/LevelPage';
 
 const App: React.FC = () => {
@@ -17,7 +16,6 @@ const App: React.FC = () => {
           <Route exact path="/level/:id" component={LevelPage} />
         </Switch>
       </Router>
-      <Footer />
     </Container>
   );
 };

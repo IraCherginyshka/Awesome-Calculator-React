@@ -7,10 +7,11 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { blue, purple } from '@material-ui/core/colors';
 import { Grid } from '@material-ui/core';
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { LevelInterface } from '../../interfaces/LevelsInterface';
+import { MAX_QUANTITY_QUESTIONS } from '../../constants/gameConstants';
 
 const useStyles = makeStyles({
   root: {
@@ -25,25 +26,14 @@ const useStyles = makeStyles({
   },
 });
 
-const Main: React.FC = () => {
+export const Main: React.FC = () => {
   const classes = useStyles();
 
-  const levelDB: LevelInterface[] = [
-    { levelNumber: 1, quantityQuestions: 10, isCompleted: true },
-    { levelNumber: 2, quantityQuestions: 10, isCompleted: true },
-    { levelNumber: 3, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 4, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 5, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 6, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 7, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 8, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 9, quantityQuestions: 10, isCompleted: false },
-    { levelNumber: 10, quantityQuestions: 10, isCompleted: false },
-  ];
+  const levelDB: LevelInterface[] = [...Array(MAX_QUANTITY_QUESTIONS)].map((level, index) => {
+    return { levelNumber: index + 1, quantityQuestions: MAX_QUANTITY_QUESTIONS };
+  });
 
-  const [levelsList] = useState(levelDB);
-
-  const levels = levelsList.map((level) => {
+  const levelsView = levelDB.map((level) => {
     return (
       <Card className={classes.root} key={level.levelNumber}>
         <CardActionArea>
@@ -55,9 +45,6 @@ const Main: React.FC = () => {
             <Typography color="textSecondary" component="p">
               Questions:
               {level.quantityQuestions}
-            </Typography>
-            <Typography color="textSecondary" component="p">
-              {level.isCompleted ? 'Completed' : 'Not Started'}
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -74,9 +61,7 @@ const Main: React.FC = () => {
 
   return (
     <Grid container direction="row" justify="space-around" alignItems="center">
-      {levels}
+      {levelsView}
     </Grid>
   );
 };
-
-export default Main;
