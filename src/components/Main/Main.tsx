@@ -11,6 +11,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { LevelInterface } from '../../interfaces/LevelsInterface';
+import { MAX_QUANTITY_QUESTIONS } from '../../constants/gameConstants';
 
 const useStyles = makeStyles({
   root: {
@@ -28,18 +29,9 @@ const useStyles = makeStyles({
 export const Main: React.FC = () => {
   const classes = useStyles();
 
-  const levelDB: LevelInterface[] = [
-    { levelNumber: 1, quantityQuestions: 10 },
-    { levelNumber: 2, quantityQuestions: 10 },
-    { levelNumber: 3, quantityQuestions: 10 },
-    { levelNumber: 4, quantityQuestions: 10 },
-    { levelNumber: 5, quantityQuestions: 10 },
-    { levelNumber: 6, quantityQuestions: 10 },
-    { levelNumber: 7, quantityQuestions: 10 },
-    { levelNumber: 8, quantityQuestions: 10 },
-    { levelNumber: 9, quantityQuestions: 10 },
-    { levelNumber: 10, quantityQuestions: 10 },
-  ];
+  const levelDB: LevelInterface[] = [...Array(MAX_QUANTITY_QUESTIONS)].map((level, index) => {
+    return { levelNumber: index + 1, quantityQuestions: MAX_QUANTITY_QUESTIONS };
+  });
 
   const levelsView = levelDB.map((level) => {
     return (
