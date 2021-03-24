@@ -54,7 +54,7 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     width: '100%',
-    height: 170,
+    height: 70,
     margin: 20,
   },
   link: {
